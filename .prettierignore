@@ -1,0 +1,11 @@
+node_modules/
+dist
+public
+package-lock.json
+package.json
+.DS_Store
+.eslintignore
+build
+.gitignore
+.prettierignore
+yarn-error.log
