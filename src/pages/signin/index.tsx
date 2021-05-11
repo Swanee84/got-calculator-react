@@ -44,28 +44,29 @@ const SignIn = () => {
       <div className="container">
         <div className="content">
           <div className="top">
+            <img alt="logo" width={300} height={300} className="logo" src="/assets/logo.webp" />
             <div className="header">
               <Link to="/">
-                {/*<img alt="logo" className={styles.logo} src={logo} />*/}
-                <span className="title">왕좌의 게임 투력 계산기</span>
+                <span className="title">왕좌의 게임 가문원 관리</span>
               </Link>
             </div>
-            <div className="desc">Ant design 을 이용한 왕겜 투력 계산기</div>
+            <div className="desc">React + TS + Ant design + Mobx 를 이용한 왕겜 가문원 관리</div>
           </div>
 
           <div className="main">
             <ProForm
-              submitter={false}
-              // submitter={{
-              //   render: (_, dom) => dom.pop(),
-              //   submitButtonProps: {
-              //     loading: submitting,
-              //     size: 'large',
-              //     style: {
-              //       width: '100%',
-              //     },
-              //   },
-              // }}
+              // submitter={false}
+              submitter={{
+                render: (_, dom) => dom.pop(),
+                submitButtonProps: {
+                  loading: submitting,
+                  size: 'large',
+                  title: 'Login',
+                  style: {
+                    width: '100%',
+                  },
+                },
+              }}
               onFinish={(values) => {
                 setSubmitting(true);
                 setTimeout(() => {
@@ -88,20 +89,20 @@ const SignIn = () => {
                 placeholder="비밀번호"
                 rules={[{ required: true, message: '비밀번호를 입력해주세요' }]}
               />
-              <Button
-                block
-                type="primary"
-                size="large"
-                loading={submitting}
-                onClick={() => {
-                  setSubmitting(true);
-                  setTimeout(() => {
-                    setSubmitting(false);
-                  }, 1200);
-                }}
-              >
-                로그인
-              </Button>
+              {/*<Button*/}
+              {/*  block*/}
+              {/*  type="primary"*/}
+              {/*  size="large"*/}
+              {/*  loading={submitting}*/}
+              {/*  onClick={() => {*/}
+              {/*    setSubmitting(true);*/}
+              {/*    setTimeout(() => {*/}
+              {/*      setSubmitting(false);*/}
+              {/*    }, 1200);*/}
+              {/*  }}*/}
+              {/*>*/}
+              {/*  로그인*/}
+              {/*</Button>*/}
             </ProForm>
           </div>
         </div>
