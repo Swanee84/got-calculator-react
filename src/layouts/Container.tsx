@@ -1,72 +1,67 @@
-import React from 'react';
+import React, { useState, useLayoutEffect, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { renderRoutes, RouteConfig, RouteConfigComponentProps } from 'react-router-config';
 import 'antd/dist/antd.css';
 import './container.css';
 import { Layout, Menu } from 'antd';
-import { Route, Link } from 'react-router-dom';
-import { MenuUnfoldOutlined, MenuFoldOutlined, UserOutlined, VideoCameraOutlined, UploadOutlined } from '@ant-design/icons';
+import { MenuFoldOutlined, MenuUnfoldOutlined, UploadOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
 
-const { Header, Sider, Content, Footer } = Layout;
-import Dashboard from '../pages/dashboard';
-import Solder from '../pages/soldier';
-import Family from '../pages/family';
+const { Header, Sider, Content } = Layout;
 
-class Container extends React.Component {
-  state = {
-    collapsed: false,
-  };
-
-  toggle = () => {
-    this.setState({
-      collapsed: !this.state.collapsed,
-    });
-  };
-
-  render() {
-    return (
-      <Layout>
-        <Sider trigger={null} collapsible collapsed={this.state.collapsed}>
-          <div className="logo">
-            <span>K7: [KPOp] BLESS</span>
-          </div>
-          <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
-            <Menu.Item key="1" icon={<UserOutlined />}>
-              대시보드
-              <Link to="/" />
-            </Menu.Item>
-            <Menu.Item key="2" icon={<VideoCameraOutlined />}>
-              가문원 관리
-              <Link to="/family" />
-            </Menu.Item>
-            <Menu.Item key="3" icon={<UploadOutlined />}>
-              병종 정보 관리
-              <Link to="/soldier" />
-            </Menu.Item>
-          </Menu>
-        </Sider>
-        <Layout className="site-layout">
-          <Header className="site-layout-background" style={{ padding: 0 }}>
-            {this.state.collapsed ? (
-              <MenuUnfoldOutlined className="trigger" onClick={this.toggle} />
-            ) : (
-              <MenuFoldOutlined className="trigger" onClick={this.toggle} />
-            )}
-          </Header>
-          <Content
-            className="site-layout-background"
-            style={{
-              margin: '24px 16px',
-              padding: 24,
-              minHeight: 280,
-            }}
-          >
-            <Route exact path="/" component={Dashboard} />
-            <Route exact path="/family" component={Family} />
-            <Route exact path="/soldier" component={Solder} />
-          </Content>
-        </Layout>
-      </Layout>
+const buildMenus = (routes?: RouteConfig[]) => {
+  const menus: JSX.Element[] = [];
+  routes?.forEach((value, index) => {
+    menus.push(
+      <Menu.Item key={`${value.path}`} icon={<UserOutlined />}>
+        {value.name}
+        <Link to={`${value.path}`} />
+      </Menu.Item>,
     );
-  }
-}
+  });
+  return menus;
+};
+
+// 함수형 컴포넌트로 만들 때
+const Container: React.FC<RouteConfigComponentProps> = (props: RouteConfigComponentProps) => {
+  const [collapsed, setCollapsed] = useState<boolean>(false);
+  const defaultSelectedMenu = [props.location.pathname]; // default 값이니 set 하는 경우가 없으므로 const 변수로 한다.
+  const { route } = props;
+  const toggle = () => {
+    setCollapsed(!collapsed);
+  };
+
+  useEffect(() => {
+    console.log('route >>', route);
+    console.log('props.location >> ', props.location);
+  });
+
+  return (
+    <Layout>
+      <Sider trigger={null} collapsible collapsed={collapsed}>
+        <div className="side_logo">
+          <span>K9: [KPOp] BLESS</span> {/* 사용자 정보에서 가져오도록 변경 */}
+        </div>
+        <Menu theme="dark" mode="inline" defaultSelectedKeys={defaultSelectedMenu}>
+          {buildMenus(route?.routes)}
+        </Menu>
+      </Sider>
+      <Layout className="site-layout">
+        <Header className="site-layout-background" style={{ padding: 0 }}>
+          {collapsed ? <MenuUnfoldOutlined className="trigger" onClick={toggle} /> : <MenuFoldOutlined className="trigger" onClick={toggle} />}
+        </Header>
+        <Content
+          className="site-layout-background"
+          style={{
+            margin: '24px 16px',
+            padding: 24,
+            minHeight: 280,
+          }}
+        >
+          {renderRoutes(route?.routes)}
+        </Content>
+      </Layout>
+    </Layout>
+  );
+};
 
 export default Container;
