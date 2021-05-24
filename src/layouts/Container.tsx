@@ -1,18 +1,28 @@
-import React, { useState, useLayoutEffect, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { renderRoutes, RouteConfig, RouteConfigComponentProps } from 'react-router-config';
 import 'antd/dist/antd.css';
 import './container.css';
+import * as AntdIcons from '@ant-design/icons';
+import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { Layout, Menu } from 'antd';
-import { MenuFoldOutlined, MenuUnfoldOutlined, UploadOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
 
 const { Header, Sider, Content } = Layout;
+
+const allIcons: {
+  [key: string]: any;
+} = AntdIcons;
+
+const CustomIcon = (type: string) => {
+  const AntIcon = allIcons[type];
+  return <AntIcon />;
+};
 
 const buildMenus = (routes?: RouteConfig[]) => {
   const menus: JSX.Element[] = [];
   routes?.forEach((value, index) => {
     menus.push(
-      <Menu.Item key={`${value.path}`} icon={<UserOutlined />}>
+      <Menu.Item key={`${value.path}`} icon={<value.icon />}>
         {value.name}
         <Link to={`${value.path}`} />
       </Menu.Item>,
@@ -30,14 +40,9 @@ const Container: React.FC<RouteConfigComponentProps> = (props: RouteConfigCompon
     setCollapsed(!collapsed);
   };
 
-  useEffect(() => {
-    console.log('route >>', route);
-    console.log('props.location >> ', props.location);
-  });
-
   return (
     <Layout>
-      <Sider trigger={null} collapsible collapsed={collapsed}>
+      <Sider collapsed={collapsed}>
         <div className="side_logo">
           <span>K9: [KPOp] BLESS</span> {/* 사용자 정보에서 가져오도록 변경 */}
         </div>

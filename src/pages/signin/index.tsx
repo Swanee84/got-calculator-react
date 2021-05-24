@@ -10,21 +10,6 @@ import './index.less';
 import './UserLayout.less';
 import SwaneeFooter from '../../components/SwaneeFooter';
 
-const layout = {
-  labelCol: {
-    span: 8,
-  },
-  wrapperCol: {
-    span: 16,
-  },
-};
-const tailLayout = {
-  wrapperCol: {
-    offset: 8,
-    span: 16,
-  },
-};
-
 const SignIn = () => {
   const [submitting, setSubmitting] = useState<boolean>(false);
   const onFinish = (values: any) => {
@@ -55,19 +40,26 @@ const SignIn = () => {
 
           <div className="main">
             <ProForm
-              // submitter={false}
               submitter={{
-                render: (_, dom) => dom.pop(),
+                onSubmit: undefined,
+                resetButtonProps: {
+                  loading: submitting,
+                  size: 'large',
+                },
                 submitButtonProps: {
                   loading: submitting,
                   size: 'large',
-                  title: 'Login',
                   style: {
                     width: '100%',
                   },
                 },
+                searchConfig: {
+                  submitText: '로그인하기',
+                },
               }}
               onFinish={(values) => {
+                console.log('values >> ', values);
+                // valeu: {userId: "aaaaaaa", password: "2222222"}
                 setSubmitting(true);
                 setTimeout(() => {
                   setSubmitting(false);
