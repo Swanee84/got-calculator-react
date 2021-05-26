@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { Form, Input, Button, Checkbox } from 'antd';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
-import { DefaultFooter } from '@ant-design/pro-layout';
-import ProForm, { ProFormCheckbox, ProFormText } from '@ant-design/pro-form';
+import ProForm, { ProFormText } from '@ant-design/pro-form';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 
-import './index.less';
-import './UserLayout.less';
+import styles from './index.less';
+import logo from '../../../assets/logo.webp';
+
 import SwaneeFooter from '../../components/SwaneeFooter';
 
 const SignIn = () => {
@@ -26,26 +25,23 @@ const SignIn = () => {
         <title>ProForm 테스트용 로그인.</title>
       </Helmet>
 
-      <div className="container">
-        <div className="content">
-          <div className="top">
-            <img alt="logo" width={300} height={300} className="logo" src="/assets/logo.webp" />
-            <div className="header">
+      <div className={styles.container}>
+        <div className={styles.content}>
+          <div className={styles.top}>
+            <img alt="logo" width={300} height={300} className={styles.logo} src={logo} />
+            <div className={styles.header}>
               <Link to="/">
-                <span className="title">왕좌의 게임 가문원 관리</span>
+                <span className={styles.title}>왕좌의 게임 가문원 관리</span>
               </Link>
             </div>
-            <div className="desc">React + TS + Ant design + Mobx 를 이용한 왕겜 가문원 관리</div>
+            <div className={styles.desc}>React + TS + Ant design + Mobx 를 이용한 왕겜 가문원 관리</div>
           </div>
 
-          <div className="main">
+          <div className={styles.main}>
             <ProForm
               submitter={{
                 onSubmit: undefined,
-                resetButtonProps: {
-                  loading: submitting,
-                  size: 'large',
-                },
+                resetButtonProps: false,
                 submitButtonProps: {
                   loading: submitting,
                   size: 'large',
@@ -70,14 +66,14 @@ const SignIn = () => {
               <ProFormText
                 name="userId"
                 disabled={submitting}
-                fieldProps={{ size: 'large', prefix: <UserOutlined className="prefixIcon" /> }}
+                fieldProps={{ size: 'large', prefix: <UserOutlined className={styles.prefixIcon} /> }}
                 placeholder="아이디"
                 rules={[{ required: true, message: '아이디를 입력해주세요' }]}
               />
               <ProFormText.Password
                 name="password"
                 disabled={submitting}
-                fieldProps={{ size: 'large', prefix: <LockOutlined className="prefixIcon" /> }}
+                fieldProps={{ size: 'large', prefix: <LockOutlined className={styles.prefixIcon} /> }}
                 placeholder="비밀번호"
                 rules={[{ required: true, message: '비밀번호를 입력해주세요' }]}
               />
