@@ -5,12 +5,17 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 
 import styles from './index.less';
-import logo from '../../../assets/logo.webp';
+import logo from '@@/logo.webp';
+import store from '@/store/index';
+const { auth } = store;
 
-import SwaneeFooter from '../../components/SwaneeFooter';
+import SwaneeFooter from '@/components/SwaneeFooter';
+import { RouteConfigComponentProps } from 'react-router-config';
 
-const SignIn = () => {
+const SignIn: React.FC<RouteConfigComponentProps> = (props: RouteConfigComponentProps) => {
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const { route } = props;
+
   const onFinish = (values: any) => {
     console.log('Success:', values);
   };
@@ -53,13 +58,16 @@ const SignIn = () => {
                   submitText: '로그인하기',
                 },
               }}
-              onFinish={(values) => {
+              onFinish={async (values) => {
                 console.log('values >> ', values);
                 // valeu: {userId: "aaaaaaa", password: "2222222"}
                 setSubmitting(true);
-                setTimeout(() => {
-                  setSubmitting(false);
-                }, 1200);
+                await auth.signIn(values.userId, values.password);
+                setSubmitting(false);
+                if (auth.isAuth) {
+                  alert('로그인 되었습니다.');
+                  props.history.push('/');
+                }
                 return Promise.resolve();
               }}
             >
@@ -77,20 +85,6 @@ const SignIn = () => {
                 placeholder="비밀번호"
                 rules={[{ required: true, message: '비밀번호를 입력해주세요' }]}
               />
-              {/*<Button*/}
-              {/*  block*/}
-              {/*  type="primary"*/}
-              {/*  size="large"*/}
-              {/*  loading={submitting}*/}
-              {/*  onClick={() => {*/}
-              {/*    setSubmitting(true);*/}
-              {/*    setTimeout(() => {*/}
-              {/*      setSubmitting(false);*/}
-              {/*    }, 1200);*/}
-              {/*  }}*/}
-              {/*>*/}
-              {/*  로그인*/}
-              {/*</Button>*/}
             </ProForm>
           </div>
         </div>

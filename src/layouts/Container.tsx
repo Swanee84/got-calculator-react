@@ -9,6 +9,9 @@ import { Layout, Menu } from 'antd';
 
 const { Header, Sider, Content } = Layout;
 
+import store from '@/store/index';
+const { auth } = store;
+
 const allIcons: {
   [key: string]: any;
 } = AntdIcons;
@@ -44,7 +47,10 @@ const Container: React.FC<RouteConfigComponentProps> = (props: RouteConfigCompon
     <Layout>
       <Sider collapsed={collapsed}>
         <div className="side_logo">
-          <span>K9: [KPOp] BLESS</span> {/* 사용자 정보에서 가져오도록 변경 */}
+          <span>
+            [{auth.guildCode}] {auth.name}
+          </span>{' '}
+          {/* 사용자 정보에서 가져오도록 변경 */}
         </div>
         <Menu theme="dark" mode="inline" defaultSelectedKeys={defaultSelectedMenu}>
           {buildMenus(route?.routes)}
