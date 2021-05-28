@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import ProForm, { ProFormText } from '@ant-design/pro-form';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
@@ -11,6 +11,7 @@ const { auth } = store;
 
 import SwaneeFooter from '@/components/SwaneeFooter';
 import { RouteConfigComponentProps } from 'react-router-config';
+import { RoleConst } from '@/common/constant';
 
 const SignIn: React.FC<RouteConfigComponentProps> = (props: RouteConfigComponentProps) => {
   const [submitting, setSubmitting] = useState<boolean>(false);
@@ -23,6 +24,16 @@ const SignIn: React.FC<RouteConfigComponentProps> = (props: RouteConfigComponent
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo);
   };
+
+  useEffect(() => {
+    if (auth.isAuth) {
+      if (auth.role === RoleConst.ADMIN) {
+        props.history.push('/admin');
+      } else {
+        props.history.push('/');
+      }
+    }
+  }, []);
 
   return (
     <HelmetProvider>
@@ -65,7 +76,6 @@ const SignIn: React.FC<RouteConfigComponentProps> = (props: RouteConfigComponent
                 await auth.signIn(values.userId, values.password);
                 setSubmitting(false);
                 if (auth.isAuth) {
-                  alert('로그인 되었습니다.');
                   props.history.push('/');
                 }
                 return Promise.resolve();

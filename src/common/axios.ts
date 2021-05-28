@@ -7,7 +7,7 @@ const axiosInstance = axios.create({
 });
 
 if (localStorage.token) {
-  axiosInstance.defaults.headers.Authorization = localStorage.token;
+  axiosInstance.defaults.headers.authorization = localStorage.token;
 }
 
 axiosInstance.interceptors.response.use(
