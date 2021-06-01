@@ -54,7 +54,7 @@ const Container: React.FC<RouteConfigComponentProps> = (props: RouteConfigCompon
     console.log('useEffect() saved jwt >> ', token);
     const result = await auth.tokenRefresh(token);
     if (result) {
-      setUserInfo({ guildCode: auth.guildCode, name: auth.name });
+      // setUserInfo({ guildCode: auth.guildCode, name: auth.name });
     } else {
       message.error('로그인해주세요.');
       props.history.push('/sign');
@@ -76,7 +76,9 @@ const Container: React.FC<RouteConfigComponentProps> = (props: RouteConfigCompon
       <Sider collapsed={collapsed}>
         <div className="side_logo">
           <span>
-            [{userInfo.guildCode}] {userInfo.name}
+            {/*[{userInfo.guildCode}] {userInfo.name}*/}
+            {auth.isAuth ? auth.userTitle : 'Unsigned'}
+            {/*[{auth.guildCode}] {auth.name}*/}
           </span>{' '}
           {/* 사용자 정보에서 가져오도록 변경 11 */}
         </div>
