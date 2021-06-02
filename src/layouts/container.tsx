@@ -82,7 +82,7 @@ const Container: React.FC<RouteConfigComponentProps> = (props: RouteConfigCompon
     <Layout>
       <Sider collapsed={collapsed}>
         <div className="side_logo">
-          <span>{userTitle}</span> {/* 사용자 정보에서 가져오도록 변경 11 */}
+          <span>{userTitle}</span>
         </div>
         <Menu theme="dark" mode="inline" defaultSelectedKeys={defaultSelectedMenu}>
           {buildMenus(route?.routes)}

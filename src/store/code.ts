@@ -70,6 +70,10 @@ class CodeMobx {
   get rootCodeGroupList() {
     return this.getCodeGroup('ROOT');
   }
+
+  public deleteCode = async (code: string) => {
+    const response = await axios.delete('');
+  };
 }
 
 const code = new CodeMobx();

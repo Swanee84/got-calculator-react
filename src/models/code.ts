@@ -19,3 +19,13 @@ export interface CodeCardProps {
 export interface NameForCode {
   [key: string]: string;
 }
+
+export interface CodeFormProps {
+  modalVisible: boolean;
+  onSubmit: (isCreate: boolean, fieldsValue: ICode) => Promise<boolean>;
+  onCancel: () => void;
+  isCreate: boolean;
+  values?: Partial<ICode>;
+  refreshCodeList: () => void;
+  cardType: string;
+}
