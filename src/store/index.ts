@@ -1,3 +1,4 @@
 import auth from './auth';
-const store = { auth };
+import code from './code';
+const store = { auth, code };
 export default store;

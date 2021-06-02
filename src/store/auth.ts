@@ -45,6 +45,8 @@ class Auth {
     this.name = '';
     this.guildCode = '';
     this.role = '';
+
+    delete localStorage.token;
   };
 
   public tokenRefresh = async (token: string) => {

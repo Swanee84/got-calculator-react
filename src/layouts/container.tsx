@@ -11,7 +11,7 @@ const { Header, Sider, Content } = Layout;
 
 import { RoleConst } from '@/common/constant';
 import store from '@/store/index';
-const { auth } = store;
+const { auth, code } = store;
 
 const allIcons: {
   [key: string]: any;
@@ -44,7 +44,7 @@ const buildMenus = (routes?: RouteConfig[]) => {
 const Container: React.FC<RouteConfigComponentProps> = (props: RouteConfigComponentProps) => {
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const defaultSelectedMenu = [props.location.pathname]; // default 값이니 set 하는 경우가 없으므로 const 변수로 한다.
-  const [userInfo, setUserInfo] = useState<any>({ guildCode: auth.guildCode, name: auth.name });
+  const [userTitle, setUserTitle] = useState<string>('Unsigned');
   const { route } = props;
   const toggle = () => {
     setCollapsed(!collapsed);
@@ -54,11 +54,17 @@ const Container: React.FC<RouteConfigComponentProps> = (props: RouteConfigCompon
     console.log('useEffect() saved jwt >> ', token);
     const result = await auth.tokenRefresh(token);
     if (result) {
-      // setUserInfo({ guildCode: auth.guildCode, name: auth.name });
+      message.success('자동 로그인 완료.');
+      setUserTitle(auth.userTitle);
     } else {
       message.error('로그인해주세요.');
       props.history.push('/sign');
     }
+  };
+
+  const getCodeList = async () => {
+    console.log('useEffect() => getCodeList()');
+    await code.downloadCodeList();
   };
 
   useEffect(() => {
@@ -66,8 +72,9 @@ const Container: React.FC<RouteConfigComponentProps> = (props: RouteConfigCompon
       console.log('토큰 리프레시가 필요합니다.');
       const token = localStorage.token;
       tokenRefresh(token).then();
+      getCodeList().then();
     } else {
-      console.log('로그인이 되어있습니다.');
+      message.success('자동 로그인 완료.');
     }
   }, []);
 
@@ -75,12 +82,7 @@ const Container: React.FC<RouteConfigComponentProps> = (props: RouteConfigCompon
     <Layout>
       <Sider collapsed={collapsed}>
         <div className="side_logo">
-          <span>
-            {/*[{userInfo.guildCode}] {userInfo.name}*/}
-            {auth.isAuth ? auth.userTitle : 'Unsigned'}
-            {/*[{auth.guildCode}] {auth.name}*/}
-          </span>{' '}
-          {/* 사용자 정보에서 가져오도록 변경 11 */}
+          <span>{userTitle}</span> {/* 사용자 정보에서 가져오도록 변경 11 */}
         </div>
         <Menu theme="dark" mode="inline" defaultSelectedKeys={defaultSelectedMenu}>
           {buildMenus(route?.routes)}

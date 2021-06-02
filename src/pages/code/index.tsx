@@ -1,11 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { RouteConfigComponentProps } from 'react-router-config';
-import { RoleConst } from '@/common/constant';
 import store from '@/store/index';
-const { auth } = store;
+import { Col, Row } from 'antd';
+import CodeListCard from '@/pages/code/CodeListCard';
+import ICode from '@/models/code';
+const { auth, code } = store;
 
-const Code: React.FC<RouteConfigComponentProps> = (props: RouteConfigComponentProps) => {
+const CodeManagement: React.FC<RouteConfigComponentProps> = (props: RouteConfigComponentProps) => {
   const { route } = props;
+  const [selectedGroupIndex, setSelectedGroupIndex] = useState<number>(-1);
+  const [selectedDetailIndex, setSelectedDetailIndex] = useState<number>(-1);
+  const [selectedGroupCode, setSelectedGroupCode] = useState<ICode | null>(null);
 
   useEffect(() => {
     console.log('route >> ', route);
@@ -17,7 +22,16 @@ const Code: React.FC<RouteConfigComponentProps> = (props: RouteConfigComponentPr
     }
   }, []);
 
-  return <div>Code</div>;
+  return (
+    <Row gutter={12}>
+      <Col span={12}>
+        <CodeListCard cardType={'GROUP'} list={code.rootCodeGroupList} />
+      </Col>
+      <Col span={12}>
+        <CodeListCard cardType={'DETAIL'} list={selectedGroupCode?.codeDetails} />
+      </Col>
+    </Row>
+  );
 };
 
-export default Code;
+export default CodeManagement;
