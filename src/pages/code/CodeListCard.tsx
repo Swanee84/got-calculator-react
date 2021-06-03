@@ -1,27 +1,35 @@
 import React, { useEffect, useState } from 'react';
-import { Avatar, Button, Card, Form, Input, List, message, Modal, Radio, Tooltip } from 'antd';
-import { CheckOutlined, EditOutlined, FileAddOutlined, SearchOutlined, WarningOutlined } from '@ant-design/icons';
-import { cyan } from '@ant-design/colors';
-import ICode, { CodeCardProps, CodeFormProps } from '@/models/code';
-import { RouteConfigComponentProps } from 'react-router-config';
+import { Avatar, Button, Card, Input, List, Select, Tooltip } from 'antd';
+import { CheckOutlined, EditOutlined, FileAddOutlined, SearchOutlined } from '@ant-design/icons';
+import { cyan, green } from '@ant-design/colors';
+import ICode, { CodeCardProps } from '@/models/code';
 import store from '@/store';
-const { auth, code } = store;
+import CodeForm from '@/pages/code/CodeForm';
 
-const defaultCode = {
-  parentCode: 'ROOT',
-  code: '',
-  codeName: '',
-  status: '',
-};
+const { Option } = Select;
+const { code } = store;
+
 const CodeListCard: React.FC<CodeCardProps> = (props: CodeCardProps) => {
-  const [selectedIndex, setSelectedIndex] = useState<number>();
+  const { cardType, list, selectedCodeCallback, parentCode } = props;
+  const typeStr = cardType === 'GROUP' ? '그룹' : '상세';
+  const color = cardType === 'GROUP' ? cyan : green;
+  const defaultCode = {
+    parentCode: parentCode,
+    code: '',
+    codeName: '',
+    status: '',
+  };
+
+  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const [searchCode, setSearchCode] = useState<string>('');
   const [formModalVisible, setFormModalVisible] = useState<boolean>(false);
   const [formIsCreate, setFormIsCreate] = useState<boolean>(false);
   const [codeFormValues, setCodeFormValues] = useState<ICode>(defaultCode);
 
-  const { cardType, list } = props;
-  const typeStr = cardType === 'GROUP' ? '그룹' : '상세';
+  useEffect(() => {
+    console.log(typeStr + ' list 가 변경되었다?');
+    setSelectedIndex(-1);
+  }, [list]);
 
   return (
     <>
@@ -68,6 +76,7 @@ const CodeListCard: React.FC<CodeCardProps> = (props: CodeCardProps) => {
                   if (!item.codeDetails) {
                     item.codeDetails = code.getCodeGroup(item.code);
                   }
+                  selectedCodeCallback(item);
                 }}
                 style={{ cursor: 'pointer' }}
                 key={item.id}
@@ -91,23 +100,42 @@ const CodeListCard: React.FC<CodeCardProps> = (props: CodeCardProps) => {
               >
                 <List.Item.Meta
                   avatar={
-                    <Avatar style={{ backgroundColor: cyan[4], verticalAlign: 'middle' }} size="large">
+                    <Avatar style={{ backgroundColor: color[4], verticalAlign: 'middle' }} size="large">
                       {isSelected ? <CheckOutlined /> : index + 1}
                     </Avatar>
                   }
                   title={item.code}
                   description={item.codeName}
                 />
-                <div>
-                  {item.parentCode !== 'ROOT' ? item.parentCode : null}
-                  <br />
-                  {code.getNameForCode(item.status)}
-                </div>
+                <div>{code.getNameForCode(item.status)}</div>
               </List.Item>
             );
           }}
         />
       </Card>
+      <CodeForm
+        modalVisible={formModalVisible}
+        onSubmit={async (isCreate: boolean, value: ICode): Promise<boolean> => {
+          setFormModalVisible(false);
+          console.log('onSubmit >> ', value);
+          if (isCreate) {
+            await code.insertCode(value);
+          } else if (selectedIndex > -1) {
+            if (list) {
+              const originItem = list[selectedIndex];
+              await code.updateCode(originItem.code, value);
+            }
+          }
+          return true;
+        }}
+        refreshCodeList={() => {
+          console.log('refreshCodeList()');
+        }}
+        onCancel={() => setFormModalVisible(false)}
+        isCreate={formIsCreate}
+        values={codeFormValues}
+        cardType={cardType}
+      />
     </>
   );
 };
@@ -128,119 +156,3 @@ const filterCode = (list: ICode[] | undefined, search: string) => {
 };
 
 export default CodeListCard;
-
-const FormItem = Form.Item;
-
-const CodeForm: React.FC<CodeFormProps> = (props: CodeFormProps) => {
-  const [form] = Form.useForm();
-
-  const { modalVisible, onSubmit: handleSubmit, onCancel, isCreate, values, refreshCodeList, cardType } = props;
-
-  const [formValues, setFormValues] = useState(values);
-
-  useEffect(() => {
-    console.log('group value >> ', values);
-    setFormValues(values);
-    form.setFieldsValue(values as any);
-    return () => {
-      form.resetFields();
-    };
-  }, [values]);
-
-  const okHandle = async () => {
-    const fieldsValue = (await form.validateFields()) as ICode;
-    console.log('fieldsValue::', fieldsValue);
-    const success = await handleSubmit(isCreate, fieldsValue);
-    if (success) {
-      refreshCodeList();
-      form.resetFields();
-    }
-  };
-
-  const deleteConfirmModal = (title: string, content: string, okText = '삭제', cancelText = '취소') => {
-    return new Promise<boolean>((resolve) => {
-      Modal.confirm({
-        title,
-        icon: <WarningOutlined />,
-        content,
-        okText,
-        onOk: () => {
-          resolve(true);
-        },
-        onCancel: () => {
-          resolve(false);
-        },
-        cancelText,
-      });
-    });
-  };
-
-  const deleteButtonAction = async () => {
-    const deleteConfirm = await deleteConfirmModal('그룹 코드 삭제 여부', '그룹 코드를 삭제하시겠습니까?\n이 실행은 되돌릴 수 없습니다.');
-    if (!deleteConfirm) {
-      return;
-    }
-    const codeStr: string = values?.code ?? '';
-    if (codeStr) {
-      message.success('삭제되었습니다.');
-      refreshCodeList();
-      onCancel();
-    }
-  };
-
-  const renderFooter = () => {
-    return (
-      <>
-        {isCreate ? null : (
-          <Button danger style={{ float: 'left' }} onClick={deleteButtonAction}>
-            삭제
-          </Button>
-        )}
-        <Button onClick={onCancel}>취소</Button>
-        <Button type="primary" onClick={() => okHandle()}>
-          저장
-        </Button>
-      </>
-    );
-  };
-  return (
-    <Modal
-      destroyOnClose
-      title={`${cardType === 'GROUP' ? '그룹' : '상세'} 코드 ${isCreate ? '등록' : '수정'}`}
-      visible={modalVisible}
-      footer={renderFooter()}
-      onOk={okHandle}
-      onCancel={onCancel}
-    >
-      <Form form={form} initialValues={formValues}>
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="그룹 코드"
-          name="groupCode"
-          rules={[{ required: true, message: '그룹 코드는 필수 입니다.', min: 2 }]}
-        >
-          <Input placeholder="그룹 코드 입력" readOnly={!isCreate} />
-        </FormItem>
-        <FormItem
-          labelCol={{ span: 5 }}
-          wrapperCol={{ span: 15 }}
-          label="그룹 코드 명"
-          name="groupCodeName"
-          rules={[{ required: true, message: '그룹 코드 명은 필수 입니다.', min: 1 }]}
-        >
-          <Input placeholder="그룹 코드 명 입력" />
-        </FormItem>
-        <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="상태" name="status">
-          <Radio.Group buttonStyle="solid">
-            {code.getCodeGroup('STATUS').map((code: ICode) => (
-              <Radio.Button key={code.code} value={code.code}>
-                {code.codeName}
-              </Radio.Button>
-            ))}
-          </Radio.Group>
-        </FormItem>
-      </Form>
-    </Modal>
-  );
-};

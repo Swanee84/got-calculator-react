@@ -62,17 +62,12 @@ const Container: React.FC<RouteConfigComponentProps> = (props: RouteConfigCompon
     }
   };
 
-  const getCodeList = async () => {
-    console.log('useEffect() => getCodeList()');
-    await code.downloadCodeList();
-  };
-
   useEffect(() => {
     if (!auth.isAuth) {
       console.log('토큰 리프레시가 필요합니다.');
       const token = localStorage.token;
       tokenRefresh(token).then();
-      getCodeList().then();
+      code.downloadCodeList().then();
     } else {
       message.success('자동 로그인 완료.');
     }

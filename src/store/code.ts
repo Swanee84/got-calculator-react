@@ -1,10 +1,11 @@
-import { action, computed, makeAutoObservable, makeObservable, observable } from 'mobx';
+import { makeAutoObservable } from 'mobx';
 import axios from '@/common/axios';
 import ICode, { NameForCode } from '@/models/code';
 
 class CodeMobx {
   codeList: ICode[] = [];
   nameForCode: NameForCode = {};
+  rootCodeList: ICode[] = [];
 
   constructor() {
     makeAutoObservable(this);
@@ -14,7 +15,7 @@ class CodeMobx {
     console.log('mobx action getCodeList');
 
     const response = await axios.get('code').catch((e) => {
-      return { data: null };
+      return { data: null, dataList: null, success: false };
     });
 
     if (response && response.data && response.data.dataList) {
@@ -35,6 +36,9 @@ class CodeMobx {
           const rootCode = dataList.find((sub_value: ICode) => {
             return sub_value.code === value.parentCode;
           });
+          if (!rootCode) {
+            return;
+          }
           if (!rootCode.codeDetails) {
             rootCode.codeDetails = [];
           }
@@ -68,11 +72,50 @@ class CodeMobx {
   }
 
   get rootCodeGroupList() {
-    return this.getCodeGroup('ROOT');
+    if (this.rootCodeList.length === 0) {
+      this.rootCodeList = this.getCodeGroup('ROOT');
+    }
+    return this.rootCodeList;
   }
 
+  public insertCode = async (code: ICode) => {
+    const response = await axios.post('code', code).catch((e) => {
+      return { data: null, dataList: null, success: false };
+    });
+
+    if (response && response.data && response.data.success) {
+      this.rootCodeList = [];
+      await this.downloadCodeList();
+    }
+  };
+
+  public updateCode = async (originCode: string, code: ICode) => {
+    const response = await axios.patch(`code/${originCode}`, code).catch((e) => {
+      return { data: null, dataList: null, success: false };
+    });
+
+    if (response && response.data && response.data.success) {
+      const updatedCode = response.data.data;
+      const searchCode = this.codeList.find((sub_value: ICode) => {
+        return sub_value.id === updatedCode.id;
+      }) as any;
+      if (searchCode) {
+        for (const key in searchCode) {
+          searchCode[key] = updatedCode[key];
+        }
+      }
+    }
+  };
+
   public deleteCode = async (code: string) => {
-    const response = await axios.delete('');
+    const response = await axios.delete(`code/${code}`).catch((e) => {
+      return { data: null, dataList: null, success: false };
+    });
+    if (response && response.data && response.data.success) {
+      this.rootCodeList = [];
+      await this.downloadCodeList();
+    }
+    return response.data.success;
   };
 }
 

@@ -10,7 +10,7 @@ const CodeManagement: React.FC<RouteConfigComponentProps> = (props: RouteConfigC
   const { route } = props;
   const [selectedGroupIndex, setSelectedGroupIndex] = useState<number>(-1);
   const [selectedDetailIndex, setSelectedDetailIndex] = useState<number>(-1);
-  const [selectedGroupCode, setSelectedGroupCode] = useState<ICode | null>(null);
+  const [selectedRootCode, setSelectedRootCode] = useState<ICode | null>(null);
 
   useEffect(() => {
     console.log('route >> ', route);
@@ -25,10 +25,25 @@ const CodeManagement: React.FC<RouteConfigComponentProps> = (props: RouteConfigC
   return (
     <Row gutter={12}>
       <Col span={12}>
-        <CodeListCard cardType={'GROUP'} list={code.rootCodeGroupList} />
+        <CodeListCard
+          cardType={'GROUP'}
+          list={code.rootCodeGroupList}
+          selectedCodeCallback={(selectedCode) => {
+            console.log('ROOT: ', selectedCode);
+            setSelectedRootCode(selectedCode);
+          }}
+          parentCode="ROOT"
+        />
       </Col>
       <Col span={12}>
-        <CodeListCard cardType={'DETAIL'} list={selectedGroupCode?.codeDetails} />
+        <CodeListCard
+          cardType={'DETAIL'}
+          list={selectedRootCode?.codeDetails}
+          selectedCodeCallback={(selectedCode) => {
+            console.log('detail: ', selectedCode);
+          }}
+          parentCode={selectedRootCode?.code || ''}
+        />
       </Col>
     </Row>
   );

@@ -14,6 +14,8 @@ export default interface ICode extends Basic {
 export interface CodeCardProps {
   cardType: string;
   list?: ICode[];
+  selectedCodeCallback: (selectedCode: ICode) => void;
+  parentCode: string;
 }
 
 export interface NameForCode {

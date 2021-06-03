@@ -2,7 +2,7 @@ import loadable from '@loadable/component';
 import { RouteConfig } from 'react-router-config';
 import SignIn from '@/pages/signin';
 import Container from '@/layouts/container';
-import { DashboardOutlined, IdcardOutlined, UserOutlined } from '@ant-design/icons';
+import { DashboardOutlined, IdcardOutlined, UserOutlined, CodeSandboxOutlined } from '@ant-design/icons';
 import { RoleConst } from '@/common/constant';
 
 const routesConfig: RouteConfig[] = [
@@ -52,7 +52,7 @@ const routesConfig: RouteConfig[] = [
         exact: true,
         name: '코드관리',
         component: loadable(() => import('@/pages/code')),
-        icon: DashboardOutlined,
+        icon: CodeSandboxOutlined,
         roles: [RoleConst.ADMIN],
       },
     ],
