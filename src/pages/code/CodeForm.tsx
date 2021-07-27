@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Checkbox, Form, Input, message, Modal, Radio } from 'antd';
 import { WarningOutlined } from '@ant-design/icons';
 import ICode, { CodeFormProps } from '@/models/code';
-import store from '@/store';
+import store from '@/store_mobx';
 
 const { code } = store;
 

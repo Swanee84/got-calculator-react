@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 import styles from './index.less';
 import logo from '@@/logo.webp';
-import store from '@/store/index';
+import store from '@/store_mobx/index';
 const { auth } = store;
 
 import SwaneeFooter from '@/components/SwaneeFooter';

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { RouteConfigComponentProps } from 'react-router-config';
 import { RoleConst } from '@/common/constant';
-import store from '@/store/index';
+import store from '@/store_mobx/index';
 const { auth } = store;
 
 const Dashboard: React.FC<RouteConfigComponentProps> = (props: RouteConfigComponentProps) => {

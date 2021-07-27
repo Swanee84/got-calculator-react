@@ -3,7 +3,7 @@ import { Avatar, Button, Card, Input, List, Select, Tooltip } from 'antd';
 import { CheckOutlined, EditOutlined, FileAddOutlined, SearchOutlined } from '@ant-design/icons';
 import { cyan, green } from '@ant-design/colors';
 import ICode, { CodeCardProps } from '@/models/code';
-import store from '@/store';
+import store from '@/store_mobx';
 import CodeForm from '@/pages/code/CodeForm';
 
 const { Option } = Select;

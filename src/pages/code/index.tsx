@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { RouteConfigComponentProps } from 'react-router-config';
-import store from '@/store/index';
+import store from '@/store_mobx/index';
 import { Col, Row, message } from 'antd';
 import CodeListCard from '@/pages/code/CodeListCard';
 import ICode from '@/models/code';

@@ -10,7 +10,7 @@ import { Layout, Menu, message } from 'antd';
 const { Header, Sider, Content } = Layout;
 
 import { RoleConst } from '@/common/constant';
-import store from '@/store/index';
+import store from '@/store_mobx/index';
 const { auth, code } = store;
 
 const allIcons: {
