@@ -9,12 +9,22 @@ import logo from '@@/logo.webp';
 import store from '@/store_mobx/index';
 const { auth } = store;
 
+import { RootState } from '@/store_redux';
+import { signIn, tokenRefresh } from '@/store_redux/auth/action';
+
 import SwaneeFooter from '@/components/SwaneeFooter';
 import { RouteConfigComponentProps } from 'react-router-config';
 import { RoleConst } from '@/common/constant';
+import { useDispatch, useSelector } from 'react-redux';
 
 const SignIn: React.FC<RouteConfigComponentProps> = (props: RouteConfigComponentProps) => {
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const isAuth = useSelector((state: RootState) => state.auth.isAuth);
+  const role = useSelector((state: RootState) => state.auth.role);
+
+  // dispatch를 사용하기 위한 준비
+  const dispatch = useDispatch();
+
   const { route } = props;
 
   const onFinish = (values: any) => {
@@ -26,8 +36,8 @@ const SignIn: React.FC<RouteConfigComponentProps> = (props: RouteConfigComponent
   };
 
   useEffect(() => {
-    if (auth.isAuth) {
-      if (auth.role === RoleConst.ADMIN) {
+    if (isAuth) {
+      if (role === RoleConst.ADMIN) {
         props.history.push('/admin');
       } else {
         props.history.push('/');
@@ -73,9 +83,9 @@ const SignIn: React.FC<RouteConfigComponentProps> = (props: RouteConfigComponent
                 console.log('values >> ', values);
                 // valeu: {userId: "aaaaaaa", password: "2222222"}
                 setSubmitting(true);
-                await auth.signIn(values.userId, values.password);
+                dispatch(signIn(values.userId, values.password));
                 setSubmitting(false);
-                if (auth.isAuth) {
+                if (isAuth) {
                   props.history.push('/');
                 }
                 return Promise.resolve();

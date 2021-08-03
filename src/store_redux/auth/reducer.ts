@@ -14,12 +14,14 @@ const reducer = (state = initialState, action: AuthRequest): IAuthState => {
   const newState = { ...state };
   switch (action.type) {
     case AUTH.SIGN_IN:
-      newState.email = action.payload.id;
+      return newState;
+    case AUTH.SIGN_IN_SUCCESS:
+      return newState;
+    case AUTH.SIGN_IN_FAIL:
       return newState;
     case AUTH.SIGN_OUT:
       return initialState;
     case AUTH.TOKEN_REFRESH:
-      newState.token = action.payload;
       return newState;
     default:
       return state;

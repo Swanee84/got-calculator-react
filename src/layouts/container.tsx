@@ -65,7 +65,7 @@ const Container: React.FC<RouteConfigComponentProps> = (props: RouteConfigCompon
       console.log('토큰 리프레시가 필요합니다.');
       const token = localStorage.token;
       if (token) {
-        dispatch(tokenRefresh(token));
+        dispatch(tokenRefresh);
       } else {
         message.error('로그인해주세요.').then();
         props.history.push('/sign');
