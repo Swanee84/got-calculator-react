@@ -9,13 +9,21 @@ import routes from './routes';
 
 import koKR from 'antd/lib/locale/ko_KR';
 
+import { Provider } from 'react-redux';
+import rootSaga from './store_redux/sagas';
+import configureStore from './store_redux/store';
+const store = configureStore();
+store.runSaga(rootSaga);
+
 ReactDOM.render(
   <React.StrictMode>
-    <ConfigProvider locale={koKR}>
-      <BrowserRouter>
-        <div className="App">{renderRoutes(routes)}</div>
-      </BrowserRouter>
-    </ConfigProvider>
+    <Provider store={store}>
+      <ConfigProvider locale={koKR}>
+        <BrowserRouter>
+          <div className="App">{renderRoutes(routes)}</div>
+        </BrowserRouter>
+      </ConfigProvider>
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root'),
 );

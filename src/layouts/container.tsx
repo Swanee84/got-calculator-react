@@ -9,9 +9,13 @@ import { Layout, Menu, message } from 'antd';
 
 const { Header, Sider, Content } = Layout;
 
+import { useSelector, useDispatch } from 'react-redux';
 import { RoleConst } from '@/common/constant';
 import store from '@/store_mobx/index';
-const { auth, code } = store;
+import { RootState } from '@/store_redux';
+import { tokenRefresh } from '@/store_redux/auth/action';
+
+const { code } = store;
 
 const allIcons: {
   [key: string]: any;
@@ -22,13 +26,12 @@ const CustomIcon = (type: string) => {
   return <AntIcon />;
 };
 
-const buildMenus = (routes?: RouteConfig[]) => {
+const buildMenus = (role: string, routes?: RouteConfig[]) => {
   const menus: JSX.Element[] = [];
-  const userRole = auth.role;
   routes?.forEach((value, index) => {
     // roles.indexOf(req.decodedUser.role)
     const menuRoles = value.roles;
-    if (menuRoles.indexOf(RoleConst.ALL) > -1 || menuRoles.indexOf(userRole) > -1) {
+    if (menuRoles.indexOf(RoleConst.ALL) > -1 || menuRoles.indexOf(role) > -1) {
       menus.push(
         <Menu.Item key={`${value.path}`} icon={<value.icon />}>
           {value.name}
@@ -44,29 +47,29 @@ const buildMenus = (routes?: RouteConfig[]) => {
 const Container: React.FC<RouteConfigComponentProps> = (props: RouteConfigComponentProps) => {
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const defaultSelectedMenu = [props.location.pathname]; // default 값이니 set 하는 경우가 없으므로 const 변수로 한다.
-  const [userTitle, setUserTitle] = useState<string>('Unsigned');
   const { route } = props;
   const toggle = () => {
     setCollapsed(!collapsed);
   };
 
-  const tokenRefresh = async (token: string) => {
-    console.log('useEffect() saved jwt >> ', token);
-    const result = await auth.tokenRefresh(token);
-    if (result) {
-      message.success('자동 로그인 완료.');
-      setUserTitle(auth.userTitle);
-    } else {
-      message.error('로그인해주세요.');
-      props.history.push('/sign');
-    }
-  };
+  // dispatch를 사용하기 위한 준비
+  const dispatch = useDispatch();
+
+  // store에 접근하여 state 가져오기
+  const isAuth = useSelector((state: RootState) => state.auth.isAuth);
+  const name = useSelector((state: RootState) => state.auth.name);
+  const role = useSelector((state: RootState) => state.auth.role);
 
   useEffect(() => {
-    if (!auth.isAuth) {
+    if (!isAuth) {
       console.log('토큰 리프레시가 필요합니다.');
       const token = localStorage.token;
-      tokenRefresh(token).then();
+      if (token) {
+        dispatch(tokenRefresh(token));
+      } else {
+        message.error('로그인해주세요.').then();
+        props.history.push('/sign');
+      }
       code.downloadCodeList().then();
     } else {
       message.success('자동 로그인 완료.');
@@ -77,10 +80,10 @@ const Container: React.FC<RouteConfigComponentProps> = (props: RouteConfigCompon
     <Layout>
       <Sider collapsed={collapsed}>
         <div className="side_logo">
-          <span>{userTitle}</span>
+          <span>{name}</span>
         </div>
         <Menu theme="dark" mode="inline" defaultSelectedKeys={defaultSelectedMenu}>
-          {buildMenus(route?.routes)}
+          {buildMenus(role, route?.routes)}
         </Menu>
       </Sider>
       <Layout className="site-layout">
