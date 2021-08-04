@@ -1,6 +1,7 @@
 import Basic from './basic';
 
 export default interface ICode extends Basic {
+  id: number;
   parentCode: string;
   code: string;
   codeName: string;

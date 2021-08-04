@@ -6,10 +6,8 @@ import { Link } from 'react-router-dom';
 
 import styles from './index.less';
 import logo from '@@/logo.webp';
-import store from '@/store_mobx/index';
-const { auth } = store;
 
-import { RootState } from '@/store_redux';
+import { RootState } from '@/store_redux/reducer';
 import { signIn, tokenRefresh } from '@/store_redux/auth/action';
 
 import SwaneeFooter from '@/components/SwaneeFooter';
@@ -44,6 +42,18 @@ const SignIn: React.FC<RouteConfigComponentProps> = (props: RouteConfigComponent
       }
     }
   }, []);
+
+  useEffect(() => {
+    setSubmitting(false);
+    console.log('디스패치 끝');
+    if (isAuth) {
+      if (role === RoleConst.ADMIN) {
+        props.history.push('/admin');
+      } else {
+        props.history.push('/');
+      }
+    }
+  }, [isAuth]);
 
   return (
     <HelmetProvider>
@@ -80,15 +90,9 @@ const SignIn: React.FC<RouteConfigComponentProps> = (props: RouteConfigComponent
                 },
               }}
               onFinish={async (values) => {
-                console.log('values >> ', values);
-                // valeu: {userId: "aaaaaaa", password: "2222222"}
+                console.log('시작 values >> ', values); // values: {userId: "aaaaaaa", password: "2222222"}
                 setSubmitting(true);
                 dispatch(signIn(values.userId, values.password));
-                setSubmitting(false);
-                if (isAuth) {
-                  props.history.push('/');
-                }
-                return Promise.resolve();
               }}
             >
               <ProFormText

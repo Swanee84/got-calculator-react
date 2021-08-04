@@ -10,10 +10,8 @@ import routes from './routes';
 import koKR from 'antd/lib/locale/ko_KR';
 
 import { Provider } from 'react-redux';
-import rootSaga from './store_redux/sagas';
 import configureStore from './store_redux/store';
 const store = configureStore();
-store.runSaga(rootSaga);
 
 ReactDOM.render(
   <React.StrictMode>

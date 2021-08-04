@@ -9,13 +9,12 @@ import { Layout, Menu, message } from 'antd';
 
 const { Header, Sider, Content } = Layout;
 
-import { useSelector, useDispatch } from 'react-redux';
 import { RoleConst } from '@/common/constant';
 import store from '@/store_mobx/index';
-import { RootState } from '@/store_redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '@/store_redux/reducer';
 import { tokenRefresh } from '@/store_redux/auth/action';
-
-const { code } = store;
+import { getCodeList } from '@/store_redux/code/action';
 
 const allIcons: {
   [key: string]: any;
@@ -56,31 +55,44 @@ const Container: React.FC<RouteConfigComponentProps> = (props: RouteConfigCompon
   const dispatch = useDispatch();
 
   // store에 접근하여 state 가져오기
+  const nameForCode = useSelector((state: RootState) => state.code.nameForCode);
   const isAuth = useSelector((state: RootState) => state.auth.isAuth);
   const name = useSelector((state: RootState) => state.auth.name);
   const role = useSelector((state: RootState) => state.auth.role);
 
   useEffect(() => {
+    console.log('토큰 리프레시가 필요합니다.');
+    dispatch(getCodeList());
     if (!isAuth) {
-      console.log('토큰 리프레시가 필요합니다.');
       const token = localStorage.token;
       if (token) {
-        dispatch(tokenRefresh);
+        dispatch(tokenRefresh());
       } else {
         message.error('로그인해주세요.').then();
         props.history.push('/sign');
       }
-      code.downloadCodeList().then();
-    } else {
-      message.success('자동 로그인 완료.');
     }
   }, []);
+
+  useEffect(() => {
+    console.log('useEffect [isAuth] : ', isAuth);
+    if (isAuth) {
+      // if (role === RoleConst.ADMIN) {
+      //   props.history.push('/admin');
+      // } else {
+      //   props.history.push('/');
+      // }
+      message.success('자동 로그인 완료.');
+    }
+  }, [isAuth]);
 
   return (
     <Layout>
       <Sider collapsed={collapsed}>
         <div className="side_logo">
-          <span>{name}</span>
+          <span>
+            [{nameForCode[role]}] {name}
+          </span>
         </div>
         <Menu theme="dark" mode="inline" defaultSelectedKeys={defaultSelectedMenu}>
           {buildMenus(role, route?.routes)}

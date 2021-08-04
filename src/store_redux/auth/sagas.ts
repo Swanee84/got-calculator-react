@@ -1,7 +1,6 @@
-import { takeEvery, put, call } from 'redux-saga/effects';
-import { AxiosResponse } from 'axios';
+import { call, put, takeEvery } from 'redux-saga/effects';
 import axios from '@/common/axios';
-import { AUTH, AuthRequest, signInFail, signInSuccess, tokenRefreshFail } from '@/store_redux/auth/action';
+import { AUTH, AuthRequest, signInFail, signInSuccess } from './action';
 
 const signInRequest = (payload: { id: string; pw: string }) => {
   console.log('mobx action signIn');
@@ -17,17 +16,21 @@ const tokenRefreshRequest = () => {
   return response;
 };
 
-export function* signIn(action: AuthRequest) {
-  // const posts = yield call(signInRequest, { id: _id, pw: _pw });
+export function* signInSaga(action: AuthRequest) {
   if (action.type !== AUTH.SIGN_IN) {
     return;
   }
   try {
     const { data } = yield call(signInRequest, action.payload);
-    yield put(signInSuccess(data));
+    console.log('signIn response data >> ', data);
+    if (data.status === 200) {
+      yield put(signInSuccess(data.data));
+    } else {
+      yield put(signInFail(data.data));
+    }
   } catch (e) {
     console.log(e);
-    yield put(signInFail({}));
+    yield put(signInFail(e));
   }
 }
 
@@ -37,10 +40,19 @@ export function* tokenRefreshSaga(action: AuthRequest) {
   }
   try {
     const { data } = yield call(tokenRefreshRequest);
+    console.log('signIn response data >> ', data);
+    if (data.status === 200) {
+      yield put(signInSuccess(data.data));
+    } else {
+      yield put(signInFail(data.data));
+    }
   } catch (e) {
     console.log(e);
-    yield put(tokenRefreshFail());
+    yield put(signInFail(e));
   }
 }
 
-export function* authSaga() {}
+export default function* authSaga() {
+  yield takeEvery(AUTH.SIGN_IN, signInSaga);
+  yield takeEvery(AUTH.TOKEN_REFRESH, tokenRefreshSaga);
+}

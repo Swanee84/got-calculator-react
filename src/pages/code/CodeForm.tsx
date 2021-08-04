@@ -2,13 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { Button, Checkbox, Form, Input, message, Modal, Radio } from 'antd';
 import { WarningOutlined } from '@ant-design/icons';
 import ICode, { CodeFormProps } from '@/models/code';
-import store from '@/store_mobx';
-
-const { code } = store;
+import { useDispatch, useSelector } from 'react-redux';
+import { insertCode, updateCode, deleteCode } from '@/store_redux/code/action';
+import { RootState } from '@/store_redux/reducer';
 
 const FormItem = Form.Item;
 
 const CodeForm: React.FC<CodeFormProps> = (props: CodeFormProps) => {
+  const codeList = useSelector((state: RootState) => state.code.codeList);
+  const nameForCode = useSelector((state: RootState) => state.code.nameForCode);
+  const getCodeGroup = useSelector((state: RootState) => state.code.getCodeGroup);
+
   const [form] = Form.useForm();
 
   const { modalVisible, onSubmit: handleSubmit, onCancel, isCreate, values, refreshCodeList, cardType } = props;
@@ -16,6 +20,10 @@ const CodeForm: React.FC<CodeFormProps> = (props: CodeFormProps) => {
   const [formValues, setFormValues] = useState(values);
   const typeStr = cardType === 'GROUP' ? '그룹' : '상세';
   const actionStr = isCreate ? '등록' : '수정';
+
+  // dispatch를 사용하기 위한 준비
+  const dispatch = useDispatch();
+
   useEffect(() => {
     console.log('group value >> ', values);
     setFormValues(values);
@@ -31,9 +39,11 @@ const CodeForm: React.FC<CodeFormProps> = (props: CodeFormProps) => {
 
   const okHandle = async () => {
     const fieldsValue = (await form.validateFields()) as ICode;
+    if (values?.id) {
+      fieldsValue.id = values.id;
+    }
     const success = await handleSubmit(isCreate, fieldsValue);
     if (success) {
-      refreshCodeList();
       form.resetFields();
     }
   };
@@ -61,13 +71,9 @@ const CodeForm: React.FC<CodeFormProps> = (props: CodeFormProps) => {
     if (!deleteConfirm) {
       return;
     }
-    const codeStr = values?.code;
-    if (codeStr) {
-      const result = await code.deleteCode(codeStr);
-      if (result) {
-        message.success('삭제되었습니다.');
-        onCancel();
-      }
+    const codeId = values?.id;
+    if (codeId) {
+      dispatch(deleteCode(codeId));
     }
   };
 
@@ -131,7 +137,7 @@ const CodeForm: React.FC<CodeFormProps> = (props: CodeFormProps) => {
         </FormItem>
         <FormItem labelCol={{ span: 5 }} wrapperCol={{ span: 15 }} label="상태" name="status" rules={[{ required: true, message: '상태는 필수입니다.' }]}>
           <Radio.Group buttonStyle="solid">
-            {code.getCodeGroup('STATUS').map((code: ICode) => (
+            {getCodeGroup(codeList, 'STATUS').map((code: ICode) => (
               <Radio.Button key={code.code} value={code.code}>
                 {code.codeName}
               </Radio.Button>

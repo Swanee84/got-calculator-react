@@ -3,17 +3,26 @@ import { Avatar, Button, Card, Input, List, Select, Tooltip } from 'antd';
 import { CheckOutlined, EditOutlined, FileAddOutlined, SearchOutlined } from '@ant-design/icons';
 import { cyan, green } from '@ant-design/colors';
 import ICode, { CodeCardProps } from '@/models/code';
-import store from '@/store_mobx';
 import CodeForm from '@/pages/code/CodeForm';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store_redux/reducer';
+import { insertCode, updateCode } from '@/store_redux/code/action';
 
 const { Option } = Select;
-const { code } = store;
 
 const CodeListCard: React.FC<CodeCardProps> = (props: CodeCardProps) => {
+  const codeList = useSelector((state: RootState) => state.code.codeList);
+  const nameForCode = useSelector((state: RootState) => state.code.nameForCode);
+  const getCodeGroup = useSelector((state: RootState) => state.code.getCodeGroup);
+
+  // dispatch를 사용하기 위한 준비
+  const dispatch = useDispatch();
+
   const { cardType, list, selectedCodeCallback, parentCode } = props;
   const typeStr = cardType === 'GROUP' ? '그룹' : '상세';
   const color = cardType === 'GROUP' ? cyan : green;
   const defaultCode = {
+    id: 0,
     parentCode: parentCode,
     code: '',
     codeName: '',
@@ -73,9 +82,6 @@ const CodeListCard: React.FC<CodeCardProps> = (props: CodeCardProps) => {
                 onClick={async () => {
                   console.log('리스트를 클릭했다. ', index);
                   setSelectedIndex(index);
-                  if (!item.codeDetails) {
-                    item.codeDetails = code.getCodeGroup(item.code);
-                  }
                   selectedCodeCallback(item);
                 }}
                 style={{ cursor: 'pointer' }}
@@ -107,7 +113,7 @@ const CodeListCard: React.FC<CodeCardProps> = (props: CodeCardProps) => {
                   title={item.code}
                   description={item.codeName}
                 />
-                <div>{code.getNameForCode(item.status)}</div>
+                <div>{nameForCode[item.status]}</div>
               </List.Item>
             );
           }}
@@ -119,11 +125,10 @@ const CodeListCard: React.FC<CodeCardProps> = (props: CodeCardProps) => {
           setFormModalVisible(false);
           console.log('onSubmit >> ', value);
           if (isCreate) {
-            await code.insertCode(value);
+            dispatch(insertCode(value));
           } else if (selectedIndex > -1) {
             if (list) {
-              const originItem = list[selectedIndex];
-              await code.updateCode(originItem.code, value);
+              dispatch(updateCode(value));
             }
           }
           return true;
