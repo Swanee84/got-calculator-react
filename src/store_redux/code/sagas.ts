@@ -44,8 +44,7 @@ function* insertCodeSaga(action: CodeRequest) {
     return;
   }
   try {
-    yield call(insertCodeRequest, action.payload);
-    const { data } = yield call(getCodeListRequest);
+    const { data } = yield call(insertCodeRequest, action.payload);
     yield put(finishCode(data));
   } catch (e) {
     console.log(e);
@@ -59,8 +58,7 @@ function* updateCodeSaga(action: CodeRequest) {
   }
   try {
     const code = action.payload;
-    yield call(updateCodeRequest, code);
-    const { data } = yield call(getCodeListRequest);
+    const { data } = yield call(updateCodeRequest, code);
     yield put(finishCode(data));
   } catch (e) {
     console.log(e);
@@ -73,8 +71,7 @@ function* deleteCodeSaga(action: CodeRequest) {
     return;
   }
   try {
-    yield call(deleteCodeRequest, action.payload);
-    const { data } = yield call(getCodeListRequest);
+    const { data } = yield call(deleteCodeRequest, action.payload);
     yield put(finishCode(data));
   } catch (e) {
     console.log(e);

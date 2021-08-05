@@ -8,8 +8,6 @@ import { RootState } from '@/store_redux/reducer';
 
 const CodeManagement: React.FC<RouteConfigComponentProps> = (props: RouteConfigComponentProps) => {
   const { route } = props;
-  const [selectedGroupIndex, setSelectedGroupIndex] = useState<number>(-1);
-  const [selectedDetailIndex, setSelectedDetailIndex] = useState<number>(-1);
   const [selectedRootCode, setSelectedRootCode] = useState<ICode | null>(null);
 
   const role = useSelector((state: RootState) => state.auth.role);

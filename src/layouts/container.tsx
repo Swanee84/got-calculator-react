@@ -56,9 +56,7 @@ const Container: React.FC<RouteConfigComponentProps> = (props: RouteConfigCompon
 
   // store에 접근하여 state 가져오기
   const nameForCode = useSelector((state: RootState) => state.code.nameForCode);
-  const isAuth = useSelector((state: RootState) => state.auth.isAuth);
-  const name = useSelector((state: RootState) => state.auth.name);
-  const role = useSelector((state: RootState) => state.auth.role);
+  const { isAuth, name, role } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
     console.log('토큰 리프레시가 필요합니다.');

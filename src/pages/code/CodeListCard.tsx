@@ -11,9 +11,7 @@ import { insertCode, updateCode } from '@/store_redux/code/action';
 const { Option } = Select;
 
 const CodeListCard: React.FC<CodeCardProps> = (props: CodeCardProps) => {
-  const codeList = useSelector((state: RootState) => state.code.codeList);
   const nameForCode = useSelector((state: RootState) => state.code.nameForCode);
-  const getCodeGroup = useSelector((state: RootState) => state.code.getCodeGroup);
 
   // dispatch를 사용하기 위한 준비
   const dispatch = useDispatch();
@@ -37,8 +35,19 @@ const CodeListCard: React.FC<CodeCardProps> = (props: CodeCardProps) => {
 
   useEffect(() => {
     console.log(typeStr + ' list 가 변경되었다?');
-    setSelectedIndex(-1);
+    if (list && selectedIndex >= 0) {
+      const item = list[selectedIndex];
+      selectedCodeCallback(item);
+    }
+    if (formModalVisible) {
+      setSelectedIndex(-1);
+      setFormModalVisible(false);
+    }
   }, [list]);
+
+  useEffect(() => {
+    setSelectedIndex(-1);
+  }, [parentCode]);
 
   return (
     <>
@@ -113,7 +122,7 @@ const CodeListCard: React.FC<CodeCardProps> = (props: CodeCardProps) => {
                   title={item.code}
                   description={item.codeName}
                 />
-                <div>{nameForCode[item.status]}</div>
+                <div>{nameForCode[item.status] ?? 'unknown'}</div>
               </List.Item>
             );
           }}
@@ -122,15 +131,14 @@ const CodeListCard: React.FC<CodeCardProps> = (props: CodeCardProps) => {
       <CodeForm
         modalVisible={formModalVisible}
         onSubmit={async (isCreate: boolean, value: ICode): Promise<boolean> => {
-          setFormModalVisible(false);
           console.log('onSubmit >> ', value);
           if (isCreate) {
             dispatch(insertCode(value));
-          } else if (selectedIndex > -1) {
-            if (list) {
-              dispatch(updateCode(value));
-            }
+          } else if (selectedIndex > -1 && list) {
+            dispatch(updateCode(value));
           }
+          setFormModalVisible(false);
+          setSelectedIndex(-1);
           return true;
         }}
         refreshCodeList={() => {

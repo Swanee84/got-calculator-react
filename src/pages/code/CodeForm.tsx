@@ -9,9 +9,7 @@ import { RootState } from '@/store_redux/reducer';
 const FormItem = Form.Item;
 
 const CodeForm: React.FC<CodeFormProps> = (props: CodeFormProps) => {
-  const codeList = useSelector((state: RootState) => state.code.codeList);
-  const nameForCode = useSelector((state: RootState) => state.code.nameForCode);
-  const getCodeGroup = useSelector((state: RootState) => state.code.getCodeGroup);
+  const { codeList, getCodeGroup } = useSelector((state: RootState) => state.code);
 
   const [form] = Form.useForm();
 
@@ -80,11 +78,11 @@ const CodeForm: React.FC<CodeFormProps> = (props: CodeFormProps) => {
   const renderFooter = () => {
     return (
       <>
-        {/*{isCreate ? null : (*/}
-        {/*  <Button danger style={{ float: 'left' }} onClick={deleteButtonAction}>*/}
-        {/*    완전 삭제*/}
-        {/*  </Button>*/}
-        {/*)}*/}
+        {isCreate ? null : (
+          <Button danger style={{ float: 'left' }} onClick={deleteButtonAction}>
+            완전 삭제
+          </Button>
+        )}
         <Button onClick={onCancel}>취소</Button>
         <Button type="primary" onClick={() => okHandle()}>
           저장
