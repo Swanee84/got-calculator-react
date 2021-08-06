@@ -7,6 +7,7 @@ export class CODE {
   public static readonly DELETE = 'DELETE_CODE' as const;
   public static readonly REORDER = 'REORDER_CODE' as const;
   public static readonly FINISH = 'FINISH_CODE' as const;
+  public static readonly REQUEST_ERROR = 'REQUEST_ERROR' as const;
 }
 
 export interface ICodeState {
@@ -57,10 +58,18 @@ export const finishCode = (payload: any) => {
   };
 };
 
+export const errorCode = (payload: any) => {
+  return {
+    type: CODE.REQUEST_ERROR,
+    payload,
+  };
+};
+
 export type CodeRequest =
   | ReturnType<typeof getCodeList>
   | ReturnType<typeof insertCode>
   | ReturnType<typeof updateCode>
   | ReturnType<typeof deleteCode>
   | ReturnType<typeof reorderCodeList>
-  | ReturnType<typeof finishCode>;
+  | ReturnType<typeof finishCode>
+  | ReturnType<typeof errorCode>;

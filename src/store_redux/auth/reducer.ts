@@ -7,6 +7,7 @@ const initialState: IAuthState = {
   guildCode: '',
   role: '',
   isAuth: false,
+  isLoading: false,
 };
 
 const reducer = (state = initialState, action: AuthRequest): IAuthState => {
@@ -22,6 +23,8 @@ const reducer = (state = initialState, action: AuthRequest): IAuthState => {
       return initialState;
     case AUTH.TOKEN_REFRESH:
       return state;
+    case AUTH.LOADING:
+      return { ...state, isLoading: action.payload };
     default:
       return state;
   }

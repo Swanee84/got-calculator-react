@@ -14,14 +14,12 @@ import configureStore from './store_redux/store';
 const store = configureStore();
 
 ReactDOM.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <ConfigProvider locale={koKR}>
-        <BrowserRouter>
-          <div className="App">{renderRoutes(routes)}</div>
-        </BrowserRouter>
-      </ConfigProvider>
-    </Provider>
-  </React.StrictMode>,
+  <Provider store={store}>
+    <ConfigProvider locale={koKR}>
+      <BrowserRouter>
+        <div className="App">{renderRoutes(routes)}</div>
+      </BrowserRouter>
+    </ConfigProvider>
+  </Provider>,
   document.getElementById('root'),
 );

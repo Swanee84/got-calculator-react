@@ -1,5 +1,5 @@
 import ICode, { NameForCode } from '@/models/code';
-import { CODE, ICodeState, CodeRequest } from './action';
+import { CODE, CodeRequest, ICodeState } from './action';
 
 const initialState: ICodeState = {
   codeList: [],
@@ -33,40 +33,44 @@ const reducer = (state = initialState, action: CodeRequest): ICodeState => {
     case CODE.REORDER:
       return state;
     case CODE.FINISH: {
-      const newState = { ...state };
-      const dataList = action.payload.dataList;
-      const nameForCode: NameForCode = {};
-      const rootList: ICode[] = [];
-
-      dataList.forEach((value: ICode) => {
-        if (value.code && value.codeName && value.status === 'NORMAL') {
-          nameForCode[value.code] = value.codeName; // codeName 은 not null
-        }
-      });
-      dataList.forEach((value: ICode) => {
-        if (value.parentCode === 'ROOT') {
-          rootList.push(value);
-        } else {
-          const rootCode = dataList.find((sub_value: ICode) => {
-            return sub_value.code === value.parentCode;
-          });
-          if (!rootCode) {
-            return;
-          }
-          if (!rootCode.codeDetails) {
-            rootCode.codeDetails = [];
-          }
-          rootCode.codeDetails.push(value);
-        }
-      });
-      newState.codeList = dataList;
-      newState.nameForCode = nameForCode;
-      newState.rootCodeList = rootList;
-      return newState;
+      const newState = makeCodeState(action.payload);
+      return { ...state, ...newState };
     }
+    case CODE.REQUEST_ERROR:
+      return state;
     default:
       return state;
   }
 };
 
 export default reducer;
+
+const makeCodeState = (data: any) => {
+  const codeList = data.dataList;
+  const nameForCode: NameForCode = {};
+  const rootCodeList: ICode[] = [];
+
+  codeList.forEach((value: ICode) => {
+    if (value.code && value.codeName && value.status === 'NORMAL') {
+      nameForCode[value.code] = value.codeName; // codeName 은 not null
+    }
+  });
+  codeList.forEach((value: ICode) => {
+    if (value.parentCode === 'ROOT') {
+      rootCodeList.push(value);
+    } else {
+      const rootCode = codeList.find((sub_value: ICode) => {
+        return sub_value.code === value.parentCode;
+      });
+      if (!rootCode) {
+        return;
+      }
+      if (!rootCode.codeDetails) {
+        rootCode.codeDetails = [];
+      }
+      rootCode.codeDetails.push(value);
+    }
+  });
+
+  return { codeList, nameForCode, rootCodeList };
+};

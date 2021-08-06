@@ -2,6 +2,7 @@ import { call, put, takeEvery } from 'redux-saga/effects';
 import axios from '@/common/axios';
 import ICode from '@/models/code';
 import { CODE, CodeRequest, getCodeList, insertCode, updateCode, deleteCode, reorderCodeList, finishCode } from './action';
+import { setLoading } from '@/store_redux/auth/action';
 
 const getCodeListRequest = () => {
   const response = axios.get('code');
@@ -33,9 +34,11 @@ function* getCodeSaga(action: CodeRequest) {
   try {
     const { data } = yield call(getCodeListRequest);
     yield put(finishCode(data));
+    yield put(setLoading(false));
   } catch (e) {
     console.log(e);
     yield put(finishCode([]));
+    yield put(setLoading(false));
   }
 }
 
@@ -46,6 +49,7 @@ function* insertCodeSaga(action: CodeRequest) {
   try {
     const { data } = yield call(insertCodeRequest, action.payload);
     yield put(finishCode(data));
+    yield put(setLoading(false));
   } catch (e) {
     console.log(e);
     yield put(finishCode([]));
@@ -60,6 +64,7 @@ function* updateCodeSaga(action: CodeRequest) {
     const code = action.payload;
     const { data } = yield call(updateCodeRequest, code);
     yield put(finishCode(data));
+    yield put(setLoading(false));
   } catch (e) {
     console.log(e);
     yield put(finishCode([]));
@@ -73,6 +78,7 @@ function* deleteCodeSaga(action: CodeRequest) {
   try {
     const { data } = yield call(deleteCodeRequest, action.payload);
     yield put(finishCode(data));
+    yield put(setLoading(false));
   } catch (e) {
     console.log(e);
     yield put(finishCode([]));
@@ -87,6 +93,7 @@ function* reorderCodeSaga(action: CodeRequest) {
     yield call(deleteCodeRequest, action.payload);
     const { data } = yield call(getCodeListRequest);
     yield put(finishCode(data));
+    yield put(setLoading(false));
   } catch (e) {
     console.log(e);
     yield put(finishCode([]));

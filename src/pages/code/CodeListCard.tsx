@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Avatar, Button, Card, Input, List, Select, Tooltip } from 'antd';
+import { Avatar, Button, Card, Input, List, Select, Tooltip, Spin } from 'antd';
 import { CheckOutlined, EditOutlined, FileAddOutlined, SearchOutlined } from '@ant-design/icons';
 import { cyan, green } from '@ant-design/colors';
 import ICode, { CodeCardProps } from '@/models/code';
@@ -7,6 +7,7 @@ import CodeForm from '@/pages/code/CodeForm';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store_redux/reducer';
 import { insertCode, updateCode } from '@/store_redux/code/action';
+import { setLoading } from '@/store_redux/auth/action';
 
 const { Option } = Select;
 
@@ -132,6 +133,7 @@ const CodeListCard: React.FC<CodeCardProps> = (props: CodeCardProps) => {
         modalVisible={formModalVisible}
         onSubmit={async (isCreate: boolean, value: ICode): Promise<boolean> => {
           console.log('onSubmit >> ', value);
+          dispatch(setLoading(true));
           if (isCreate) {
             dispatch(insertCode(value));
           } else if (selectedIndex > -1 && list) {
